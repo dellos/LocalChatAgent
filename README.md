@@ -2,13 +2,15 @@
 
 Local Chat Agent - Docker-based Python web server using Nicegui
 
-What App Do:
-    Run a local webserver using Nicegui
-    Support chat to backend Ollama LLM qwen2.5:3b -> Docker container
-    Support STT using parakeet -> Docker container
-    Support TTS using kokoro -> Docker container
-    The Voice chunk recongine lying on client side using onnxruntime-web and vad-web
+## What App Do:
 
+- Run a local webserver using Nicegui
+- Support chat to backend Ollama LLM qwen2.5:3b -> Docker container
+- Support STT using parakeet -> Docker container
+- Support TTS using kokoro -> Docker container
+- The Voice chunk recongine lying on client side using onnxruntime-web and vad-web
+
+## Build and Run 
 0. Make sure docker is installed on your local enviroment
 
 1. Build the docker images
