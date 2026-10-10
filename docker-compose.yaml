@@ -1,0 +1,19 @@
+services:
+  ollama:
+    container_name: brain
+    build: 
+      context: ./ollama
+    ports:
+      - "1234:11434"
+  kokoro:
+    container_name: text2speed
+    build: 
+      context: ./kokoro
+    ports:
+      - "1235:8000"
+  parakeet:
+    container_name: speed2text
+    build: 
+      context: ./parakeet
+    ports:
+      - "1236:8900"

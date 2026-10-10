@@ -1,0 +1,70 @@
+<script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@latest/dist/bundle.min.js"></script>
+<script type="module">
+    import { AudioWebSocket } from '/static/websocketClient.js';
+    import {VAD} from '/static/vadClient.js';
+    window.ws = new AudioWebSocket("http://localhost:1236/ws/stt")
+    window.myvad = new VAD({
+        socket: window.ws,   
+    });
+    //Change to using chat box id to upate text by using Customer event flow
+    // window.ws.onMessageCallback = async (text) => {
+    //     console.log("Response from Python:", text);
+    //     //test call back to update ui api(still dont know better way.)
+    //     try {
+    //         const res = await fetch('/api/update-textbox', {
+    //             method: 'POST',
+    //             credentials: 'include',   //allow cross-orgin
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ text: text , client_id: window.clientId}),
+    //         });
+
+    //         if (!res.ok) {
+    //             console.error('update-textbox failed:', res.status, await res.text());
+    //             return;
+    //         }
+
+    //         const result = await res.json();
+    //         console.log('Endpoint result:', result);
+    //     } catch (err) {
+    //         console.error('Network error:', err);
+    //     }
+    // };
+    function sendUpdateEvent(id, text) {
+        emitEvent('stt_text', { id: id, text: text });
+    }
+    function toggleVoiceProcessEvent(flg){
+        emitEvent('stt_process',{onProcess:flg})
+    }
+    function bindingCallback(box_id){
+        let chat_box_id = box_id;
+        if ( window.ws.onMessageCallback) {
+            return;
+        }
+        window.ws.onMessageCallback = async (text) => {
+            console.log("Response from Python stt server:", text);
+            try {
+                if(text){
+                    sendUpdateEvent(chat_box_id,text);
+                    console.log("updated chat box");
+                }
+            } catch (err) {
+                console.error('Network error:', err);
+            }
+        }
+        window.myvad.onSpeechStart = async() =>{
+            toggleVoiceProcessEvent(true)
+        }
+        window.myvad.onSpeechEnd = async (_) => {
+            toggleVoiceProcessEvent(false)
+        }
+    }
+    window.recordToggle = function(box_id,is_recording){
+        bindingCallback(box_id);
+        if(is_recording === true){
+            window.myvad.start(); 
+        }
+        else{
+            window.myvad.stop();
+        }
+    }
+</script>
